@@ -1,0 +1,14 @@
+[Unit]
+Description=Transparent Proxy Settings
+After=network.target v2ray.service
+Requires=v2ray.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/etc/transparentproxy/iptables-set.sh
+ExecStop=/etc/transparentproxy/iptables-unset.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

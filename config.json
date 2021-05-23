@@ -1,0 +1,151 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "protocol": "socks",
+      "port": 51080,
+      "settings": {
+        "auth": "noauth",
+        "udp": true
+      }
+    },
+    {
+      "protocol": "http",
+      "port": 51081
+    },
+    {
+      "tag": "transparent",
+      "port": $PORT,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "network": "tcp,udp",
+        "followRedirect": true
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tproxy": "tproxy"
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "$DOMAIN",
+            "port": 443,
+            "users": [
+              {
+                "id": "$UUID",
+                "encryption": "none",
+                "level": 0,
+                "alterId": 64
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/$WSPATH"
+        },
+        "security": "tls",
+        "sockopt": {
+          "mark": $SO_MARK
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct",
+      "streamSettings": {
+        "sockopt": {
+          "mark": $SO_MARK
+        }
+      }
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns",
+      "streamSettings": {
+        "sockopt": {
+          "mark": $SO_MARK
+        }
+      }
+    }
+  ],
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "transparent"
+        ],
+        "port": 53,
+        "network": "udp",
+        "outboundTag": "dns"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "transparent"
+        ],
+        "port": 123,
+        "network": "udp",
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "bittorrent"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domainMatcher": "mph",
+        "domain": [
+          "geosite:cn"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:private",
+          "geoip:cn"
+        ],
+        "outboundTag": "direct"
+      }
+    ]
+  },
+  "dns": {
+    "servers": [
+      "8.8.8.8",
+      "8.8.4.4",
+      "1.1.1.1",
+      {
+        "address": "114.114.114.114",
+        "port": 53,
+        "domains": [
+          "geosite:cn",
+          "ntp.org",
+          "$DOMAIN"
+        ]
+      }
+    ]
+  }
+}
