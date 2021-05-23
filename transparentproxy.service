@@ -8,7 +8,6 @@ Type=oneshot
 RemainAfterExit=yes
 ExecStart=/etc/transparentproxy/iptables-set.sh
 ExecStop=/etc/transparentproxy/iptables-unset.sh
-Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
