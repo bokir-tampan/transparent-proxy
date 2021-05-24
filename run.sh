@@ -21,7 +21,6 @@ while [[ "$#" -gt 0 ]]; do
         --tmark) TPROXY_MARK="$2"; shift ;;
         -t|--table) TABLE="$2"; shift ;;
         -ni|--network-interface) NETWORK_INTERFACE="$2"; shift ;;
-        -pn|--private-network) PRIVATE_NETWORK="$2"; shift ;;
         --file) FILE_LIMIT="$2"; shift ;;
         --proc) PROC_LIMIT="$2"; shift ;;
         --debug) set -x ;;
@@ -31,7 +30,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ -z "$DOMAIN" || -z "$UUID" ]]; then
-    echo "Usage: $0 -d <domain> -u <uuid> [-w <wspath>] [-p <port>] [--smark <so_mark>] [--tmark <tproxy_mark>] [-t <table>] [-ni <network_interface>] [-pn <private_network>] [--file <file_limit>] [--proc <proc_limit>] [--debug]"
+    echo "Usage: $0 -d <domain> -u <uuid> [-w <wspath>] [-p <port>] [--smark <so_mark>] [--tmark <tproxy_mark>] [-t <table>] [-ni <network_interface>] [--file <file_limit>] [--proc <proc_limit>] [--debug]"
     exit 1
 fi
 
@@ -41,10 +40,9 @@ SO_MARK=${SO_MARK:-255}
 TPROXY_MARK=${TPROXY_MARK:-254}
 TABLE=${TABLE:-100}
 NETWORK_INTERFACE=${NETWORK_INTERFACE:-"eth0"}
-PRIVATE_NETWORK=${PRIVATE_NETWORK:-"192.168.0.0/16"}
 set +a
 
-ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE $PRIVATE_NETWORK'
+ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE'
 
 systemctl stop v2ray || true
 systemctl stop transparentproxy || true
