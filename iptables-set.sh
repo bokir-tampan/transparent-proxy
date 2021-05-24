@@ -5,7 +5,7 @@ ip rule add fwmark $TPROXY_MARK table $TABLE
 ip route add default dev $NETWORK_INTERFACE table $TABLE
 
 iptables -t mangle -N V2RAY
-iptables -t mangle -A V2RAY -p udp --dport 53 -j TPROXY --on-port $PORT --tproxy-mark $TPROXY_MARK
+iptables -t mangle -A V2RAY -p udp --dport 53 $DNS_OPTIONS
 iptables -t mangle -A V2RAY -d 127.0.0.1/32 -j RETURN
 iptables -t mangle -A V2RAY -d 10.0.0.0/8 -j RETURN
 iptables -t mangle -A V2RAY -d 172.16.0.0/12 -j RETURN

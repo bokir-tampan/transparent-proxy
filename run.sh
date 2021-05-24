@@ -23,16 +23,14 @@ while [[ "$#" -gt 0 ]]; do
         -ni|--network-interface) NETWORK_INTERFACE="$2"; shift ;;
         --file) FILE_LIMIT="$2"; shift ;;
         --proc) PROC_LIMIT="$2"; shift ;;
+        -si|--set-iptables) SET_IPTABLES="1" ;;
+        -ui|--unset-iptables) UNSET_IPTABLES="1" ;;
+        -sd|--skip-dns) SKIP_DNS="1" ;;
         --debug) set -x ;;
         *) args+=($1) ;;
     esac
     shift
 done
-
-if [[ -z "$DOMAIN" || -z "$UUID" ]]; then
-    echo "Usage: $0 -d <domain> -u <uuid> [-w <wspath>] [-p <port>] [--smark <so_mark>] [--tmark <tproxy_mark>] [-t <table>] [-ni <network_interface>] [--file <file_limit>] [--proc <proc_limit>] [--debug]"
-    exit 1
-fi
 
 set -a
 PORT=${PORT:-51082}
@@ -40,9 +38,29 @@ SO_MARK=${SO_MARK:-255}
 TPROXY_MARK=${TPROXY_MARK:-254}
 TABLE=${TABLE:-100}
 NETWORK_INTERFACE=${NETWORK_INTERFACE:-"eth0"}
+
+if [[ -n "$SKIP_DNS" ]]; then
+    DNS_OPTIONS="-j RETURN"
+else
+    DNS_OPTIONS="-j TPROXY --on-port $PORT --tproxy-mark $TPROXY_MARK"
+fi
 set +a
 
-ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE'
+ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE $DNS_OPTIONS'
+
+if [[ -n "$SET_IPTABLES" ]]; then
+    bash <(envsubst "$ALL_ENV" < iptables-set.sh)
+    exit 0
+fi
+if [[ -n "$UNSET_IPTABLES" ]]; then
+    bash <(envsubst "$ALL_ENV" < iptables-unset.sh)
+    exit 0
+fi
+
+if [[ -z "$DOMAIN" || -z "$UUID" ]]; then
+    echo "Usage: $0 -d <domain> -u <uuid> [-w <wspath>] [-p <port>] [--smark <so_mark>] [--tmark <tproxy_mark>] [-t <table>] [-ni <network_interface>] [--file <file_limit>] [--proc <proc_limit>] [--debug] [--set-iptables] [--unset-iptables] [--skip-dns]"
+    exit 1
+fi
 
 systemctl stop v2ray || true
 systemctl stop transparentproxy || true
