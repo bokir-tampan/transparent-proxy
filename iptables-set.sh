@@ -16,6 +16,7 @@ iptables -t mangle -A PREROUTING -j V2RAY
 
 iptables -t mangle -N V2RAY_MASK
 iptables -t mangle -A V2RAY_MASK -j RETURN -m mark --mark $SO_MARK
+iptables -t mangle -A V2RAY_MASK -p udp --dport 53 $MASK_DNS_OPTIONS
 iptables -t mangle -A V2RAY_MASK -p udp -j MARK --set-mark $TPROXY_MARK
 iptables -t mangle -A V2RAY_MASK -p tcp -j MARK --set-mark $TPROXY_MARK
 iptables -t mangle -A OUTPUT -j V2RAY_MASK
