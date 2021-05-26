@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ip rule del fwmark $TPROXY_MARK table $TABLE
-ip route del default dev $NETWORK_INTERFACE table $TABLE
+ip route del local default dev $NETWORK_INTERFACE table $TABLE
 
 iptables -t mangle -D PREROUTING -j V2RAY
 iptables -t mangle -F V2RAY

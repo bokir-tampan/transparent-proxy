@@ -2,7 +2,7 @@
 set -e
 
 ip rule add fwmark $TPROXY_MARK table $TABLE
-ip route add default dev $NETWORK_INTERFACE table $TABLE
+ip route add local default dev $NETWORK_INTERFACE table $TABLE
 
 iptables -t mangle -N V2RAY
 iptables -t mangle -A V2RAY -j RETURN -m mark --mark $SO_MARK
