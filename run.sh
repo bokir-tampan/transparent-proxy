@@ -26,6 +26,7 @@ while [[ "$#" -gt 0 ]]; do
         -si|--set-iptables) SET_IPTABLES="1" ;;
         -ui|--unset-iptables) UNSET_IPTABLES="1" ;;
         -sd|--skip-dns) SKIP_DNS="1" ;;
+        -or|--only-route) export ONLY_ROUTE="1" ;;
         --debug) set -x ;;
         *) args+=($1) ;;
     esac
@@ -48,7 +49,7 @@ else
 fi
 set +a
 
-ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE $DNS_OPTIONS $MASK_DNS_OPTIONS'
+ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE $DNS_OPTIONS $MASK_DNS_OPTIONS $ONLY_ROUTE'
 
 if [[ -n "$SET_IPTABLES" ]]; then
     bash <(envsubst "$ALL_ENV" < iptables-set.sh)

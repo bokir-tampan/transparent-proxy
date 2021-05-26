@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 ip rule add fwmark $TPROXY_MARK table $TABLE
@@ -14,7 +14,9 @@ iptables -t mangle -A V2RAY -d 192.168.0.0/16 -j RETURN
 iptables -t mangle -A V2RAY -p udp -j TPROXY --on-port $PORT --tproxy-mark $TPROXY_MARK
 iptables -t mangle -A V2RAY -p tcp -j TPROXY --on-port $PORT --tproxy-mark $TPROXY_MARK
 iptables -t mangle -A PREROUTING -j V2RAY
+echo 1 > /proc/sys/net/ipv4/ip_forward
 
+if [[ -z "$ONLY_ROUTE" ]]; then
 iptables -t mangle -N V2RAY_MASK
 iptables -t mangle -A V2RAY_MASK -j RETURN -m mark --mark $SO_MARK
 iptables -t mangle -A V2RAY_MASK -p udp --dport 53 $MASK_DNS_OPTIONS
@@ -25,5 +27,4 @@ iptables -t mangle -A V2RAY_MASK -d 192.168.0.0/16 -j RETURN
 iptables -t mangle -A V2RAY_MASK -p udp -j MARK --set-mark $TPROXY_MARK
 iptables -t mangle -A V2RAY_MASK -p tcp -j MARK --set-mark $TPROXY_MARK
 iptables -t mangle -A OUTPUT -j V2RAY_MASK
-
-echo 1 > /proc/sys/net/ipv4/ip_forward
+fi
