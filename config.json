@@ -145,6 +145,15 @@
           "ntp.org",
           "$DOMAIN"
         ]
+      },
+      {
+        "address": "223.5.5.5",
+        "port": 53,
+        "domains": [
+          "geosite:cn",
+          "ntp.org",
+          "$DOMAIN"
+        ]
       }
     ]
   }
