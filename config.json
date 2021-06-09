@@ -133,6 +133,9 @@
     ]
   },
   "dns": {
+    "hosts": {
+      $DOMAIN_DNS_SET
+    },
     "servers": [
       "8.8.8.8",
       "8.8.4.4",
@@ -141,18 +144,18 @@
         "address": "114.114.114.114",
         "port": 53,
         "domains": [
+          $DOMAIN_DNS_QUERY
           "geosite:cn",
-          "ntp.org",
-          "$DOMAIN"
+          "ntp.org"
         ]
       },
       {
         "address": "223.5.5.5",
         "port": 53,
         "domains": [
+          $DOMAIN_DNS_QUERY
           "geosite:cn",
-          "ntp.org",
-          "$DOMAIN"
+          "ntp.org"
         ]
       }
     ]

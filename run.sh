@@ -13,6 +13,7 @@ args=()
 while [[ "$#" -gt 0 ]]; do
     case $1 in 
         -d|--domain) export DOMAIN="$2"; shift ;;
+        -di|--domain-ip) DOMAIN_IP="$2"; shift ;;
         -u|--uuid) export UUID="$2"; shift ;;
         -w|--wspath) export WSPATH="$2"; shift ;;
         -x|--proxy) export HTTP_PROXY="$2" HTTPS_PROXY="$2" http_proxy="$2" https_proxy="$2"; shift ;;
@@ -47,9 +48,17 @@ else
     DNS_OPTIONS="-j TPROXY --on-port $PORT --tproxy-mark $TPROXY_MARK"
     MASK_DNS_OPTIONS="-j MARK --set-mark $TPROXY_MARK"
 fi
+
+if [[ -n "$DOMAIN_IP" ]]; then
+    DOMAIN_DNS_SET="\"$DOMAIN\": \"$DOMAIN_IP\""
+    DOMAIN_DNS_QUERY=""
+else
+    DOMAIN_DNS_SET=""
+    DOMAIN_DNS_QUERY="\"$DOMAIN\","
+fi
 set +a
 
-ALL_ENV='$DOMAIN $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE $DNS_OPTIONS $MASK_DNS_OPTIONS $ONLY_ROUTE'
+ALL_ENV='$DOMAIN $DOMAIN_DNS_SET $DOMAIN_DNS_QUERY $UUID $WSPATH $PORT $SO_MARK $TPROXY_MARK $TABLE $NETWORK_INTERFACE $DNS_OPTIONS $MASK_DNS_OPTIONS $ONLY_ROUTE'
 
 if [[ -n "$SET_IPTABLES" ]]; then
     bash <(envsubst "$ALL_ENV" < iptables-set.sh)
@@ -61,7 +70,7 @@ if [[ -n "$UNSET_IPTABLES" ]]; then
 fi
 
 if [[ -z "$DOMAIN" || -z "$UUID" ]]; then
-    echo "Usage: $0 -d <domain> -u <uuid> [-w <wspath>] [-p <port>] [--smark <so_mark>] [--tmark <tproxy_mark>] [-t <table>] [-ni <network_interface>] [--file <file_limit>] [--proc <proc_limit>] [--debug] [--set-iptables] [--unset-iptables] [--skip-dns]"
+    echo "Usage: $0 -d <domain> -u <uuid> [-w <wspath>] [-di <domain_ip>] [-p <port>] [--smark <so_mark>] [--tmark <tproxy_mark>] [-t <table>] [-ni <network_interface>] [--file <file_limit>] [--proc <proc_limit>] [--debug] [--set-iptables] [--unset-iptables] [--skip-dns]"
     exit 1
 fi
 
