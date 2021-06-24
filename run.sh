@@ -16,7 +16,7 @@ while [[ "$#" -gt 0 ]]; do
         -di|--domain-ip) DOMAIN_IP="$2"; shift ;;
         -u|--uuid) export UUID="$2"; shift ;;
         -w|--wspath) export WSPATH="$2"; shift ;;
-        -x|--proxy) export HTTP_PROXY="$2" HTTPS_PROXY="$2" http_proxy="$2" https_proxy="$2"; shift ;;
+        -x|--proxy) export HTTP_PROXY="$2" HTTPS_PROXY="$2" http_proxy="$2" https_proxy="$2"; V2_INSTALL_PROXY="-p $2"; shift ;;
         -p|--port) PORT="$2"; shift ;;
         --smark) SO_MARK="$2"; shift ;;
         --tmark) TPROXY_MARK="$2"; shift ;;
@@ -77,7 +77,7 @@ fi
 systemctl stop v2ray || true
 systemctl stop transparentproxy || true
 
-bash <(curl -L https://github.com/v2fly/fhs-install-v2ray/raw/master/install-release.sh)
+bash <(curl -L https://github.com/v2fly/fhs-install-v2ray/raw/master/install-release.sh) $V2_INSTALL_PROXY
 
 {
     filename="/etc/systemd/system/v2ray.service"
