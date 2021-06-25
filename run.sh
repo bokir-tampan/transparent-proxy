@@ -77,7 +77,8 @@ fi
 systemctl stop v2ray || true
 systemctl stop transparentproxy || true
 
-bash <(curl -L https://github.com/v2fly/fhs-install-v2ray/raw/master/install-release.sh) $V2_INSTALL_PROXY
+# curl -LO https://github.com/v2fly/fhs-install-v2ray/raw/master/install-release.sh
+bash install-release.sh $V2_INSTALL_PROXY
 
 {
     filename="/etc/systemd/system/v2ray.service"
