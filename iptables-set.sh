@@ -4,6 +4,12 @@ set -e
 ip rule add fwmark $TPROXY_MARK table $TABLE
 ip route add local default dev $NETWORK_INTERFACE table $TABLE
 
+# packets will not go through tproxy if the tcp has already connected
+iptables -t mangle -N DIVERT
+iptables -t mangle -A DIVERT -j MARK --set-mark $TPROXY_MARK
+iptables -t mangle -A DIVERT -j ACCEPT
+iptables -t mangle -I PREROUTING -p tcp -m socket -j DIVERT
+
 iptables -t mangle -N V2RAY
 iptables -t mangle -A V2RAY -j RETURN -m mark --mark $SO_MARK
 iptables -t mangle -A V2RAY -p udp --dport 53 $DNS_OPTIONS
