@@ -99,7 +99,7 @@ bash install-release.sh $V2_INSTALL_PROXY
 }
 
 {
-    filename="/usr/local/etc/v2ray/config.json"
+    filename="/etc/v2ray/config.json"
     envsubst "$ALL_ENV" < config.json > "$filename"
 }
 
